@@ -32,8 +32,9 @@ class ProductPriceService:
             product = Products.objects.get(id=product_id)
             scraper_type = self._get_scraper(product_source=product.product_source.id)
 
-            product_new_price = scraper_type.get_price(product.link)
-            scraper_type.close()
+            with scraper_type.session() as e:
+                product_new_price = e.get_price(product.link)
+
             if not product_new_price:
                 return
 

@@ -1,16 +1,20 @@
-from playwright.sync_api import sync_playwright
+from decimal import Decimal
 from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
-from decimal import Decimal
+from playwright.sync_api import sync_playwright
+from contextlib import contextmanager
 
 
 class BaseScraper(ABC):
     def __init__(self):
+        self.playwright = None
+        self.browser = None
+        self.context = None
 
+    @contextmanager
+    def session(self):
         self.playwright = sync_playwright().start()
-
         self.browser = self.playwright.chromium.launch(headless=False)
-
         self.context = self.browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -19,11 +23,15 @@ class BaseScraper(ABC):
             timezone_id="America/Sao_Paulo",
             viewport={"width": 1366, "height": 768},
         )
-
-    def close(self):
-        self.context.close()
-        self.browser.close()
-        self.playwright.stop()
+        try:
+            yield self
+        finally:
+            if self.context:
+                self.context.close()
+            if self.browser:
+                self.browser.close()
+            if self.playwright:
+                self.playwright.stop()
 
     def _load_page(self, url):
         page = self.context.new_page()
@@ -47,9 +55,9 @@ class BaseScraper(ABC):
     def _extract_price(self, html: str):
         pass
 
-    @abstractmethod
     def get_price(self, url: str):
-        pass
+        html = self._load_page(url)
+        return self._extract_price(html)
 
 
 class MercadoLivreScraper(BaseScraper):
@@ -58,10 +66,6 @@ class MercadoLivreScraper(BaseScraper):
         price_meta = soup.find("meta", itemprop="price")
 
         return Decimal(price_meta["content"]) if price_meta else None
-
-    def get_price(self, url: str):
-        html = self._load_page(url)
-        return self._extract_price(html)
 
 
 class AmazonScraper(BaseScraper):
@@ -78,7 +82,3 @@ class AmazonScraper(BaseScraper):
         price_span = price_div.find("span", class_="a-offscreen").text.strip()
         price_formated = price_span[2:-1].replace(",", ".")
         return Decimal(price_formated) if price_formated else None
-
-    def get_price(self, url: str):
-        html = self._load_page(url)
-        return self._extract_price(html)

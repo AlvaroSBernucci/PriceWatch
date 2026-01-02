@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from products.models import Products, ProductsHistory
+from products.models import Products, ProductsHistory, ProductsSource
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -16,3 +16,12 @@ class ProductsHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductsHistory
         fields = "__all__"
+
+
+class ProductsSourceOptionSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(source="name")
+    value = serializers.IntegerField(source="id")
+
+    class Meta:
+        model = ProductsSource
+        fields = ["value", "label"]
