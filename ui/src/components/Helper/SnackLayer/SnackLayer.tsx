@@ -1,5 +1,5 @@
-import { useSnack } from "../../contexts/snackContext";
-import SnackBar from "../SnackBar/SnackBar";
+import SnackBar from "../../SnackBar/SnackBar";
+import { useSnack } from "../../../contexts/snackContext";
 
 export default function SnackLayer() {
   const { snackbarMessage, snackbarSeverity, snackbarOpen, closeSnack } = useSnack();

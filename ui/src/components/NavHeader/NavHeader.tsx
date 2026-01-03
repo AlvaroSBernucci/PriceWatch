@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { clearToken } from "../../utils/auth";
 import { AppBar, Toolbar, Container, Box, IconButton, Typography, Button, Avatar, Menu, MenuItem, Tooltip } from "@mui/material";
 import { TrendingDown } from "@mui/icons-material";
 
 const settings = [
-  { label: "Meus dispositivos", to: "/devices" },
+  { label: "Meus produtos", to: "/products" },
   { label: "Dashboard", to: "/dashboard" },
   { label: "Minha conta", to: "/account" },
-  { label: "Sair", to: "/logout" },
+  { label: "Sair", to: "/login", action: clearToken },
 ];
 
 export default function NavHeader() {
@@ -39,7 +40,14 @@ export default function NavHeader() {
 
               <Menu anchorEl={anchorUser} open={!!anchorUser} onClose={() => setAnchorUser(null)}>
                 {settings.map((setting) => (
-                  <MenuItem key={setting.label} component={Link} to={setting.to} onClick={() => setAnchorUser(null)}>
+                  <MenuItem
+                    key={setting.label}
+                    onClick={() => {
+                      setting.action?.();
+                      setAnchorUser(null);
+                    }}
+                    component={Link}
+                    to={setting.to}>
                     {setting.label}
                   </MenuItem>
                 ))}

@@ -1,38 +1,43 @@
-import { useNavigate } from "react-router-dom";
-import useApiForm from "../../hooks/useApiForm";
+import useApiForm from "../../../hooks/useApiForm";
+import ProductSourceInput from "../../ProductSourceInput/ProductSourceInput";
 import { Box, Button } from "@mui/material";
 import { CircularProgress } from "@mui/material";
-import { TextInput } from "../TextInputs/TextInputs";
-import ProductSourceInput from "../ProductSourceInput/ProductSourceInput";
+import { TextInput } from "../../TextInputs/TextInputs";
+import { registerProduct } from "../../../api/product.services";
 import { useForm, Controller } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
 import type { NewProductFormInterface } from "./NewProductForm.types";
+import { useUserContext } from "../../../contexts/userContext";
 
-function NewProductForm() {
+function NewProductForm({ onClose }: { onClose: React.Dispatch<React.SetStateAction<boolean>> }) {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<NewProductFormInterface>();
-  const onSubmit: SubmitHandler<NewProductFormInterface> = async (data) => {
-    console.log(data);
-    // setLoading(true);
-    // try {
-    //   const resp = await userLogin(data);
-    //   localStorage.setItem("token", resp.data);
-    //   navigate("/home");
-    // } catch (error) {
-    //   const errorMessage = extractErrorMessage(error);
-    //   showSnack(errorMessage, "error");
-    // } finally {
-    //   setLoading(false);
-    // }
-  };
-  const { submit, loading } = useApiForm(onSubmit);
+  const { userData } = useUserContext();
+  const { submit, loading } = useApiForm<NewProductFormInterface>((data) => registerProduct({ ...data, user: userData!.id }), {
+    onSuccess: () => onClose(false),
+    successMessage: "Produto cadastrado com sucesso",
+  });
 
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+        <Controller
+          name="name"
+          control={control}
+          rules={{ required: false }}
+          render={({ field }) => (
+            <TextInput
+              label="Nome do produto"
+              placeholder="Ex: SmartWatch Huawei GT 6"
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              disabled={loading}
+              {...field}
+            />
+          )}
+        />
         <Controller
           name="link"
           control={control}
@@ -42,6 +47,7 @@ function NewProductForm() {
               label="URL do produto"
               placeholder="Cole o link completo do produto de qualquer loja online"
               error={!!errors.link}
+              helperText={errors.link?.message}
               disabled={loading}
               {...field}
             />
@@ -55,8 +61,8 @@ function NewProductForm() {
             <TextInput
               label="Preço Alvo (Opcional)"
               placeholder="199,00"
-              helperText="Se definido, você será notificado quando o preço atingir este valor"
               error={!!errors.target_price}
+              helperText={errors.target_price ? errors.target_price?.message : "Se definido, você será notificado quando o preço atingir este valor"}
               disabled={loading}
               {...field}
             />

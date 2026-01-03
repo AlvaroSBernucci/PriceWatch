@@ -1,9 +1,5 @@
 import axios from "axios";
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosRequestHeaders,
-} from "axios";
+import type { AxiosError, AxiosRequestConfig, AxiosRequestHeaders } from "axios";
 
 import { getToken, clearToken } from "./auth";
 
@@ -32,7 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && window.location.pathname !== "/login") {
       clearToken();
       window.location.href = "/login";
     }

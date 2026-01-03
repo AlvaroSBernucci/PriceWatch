@@ -1,18 +1,17 @@
-import useApiForm from "../../hooks/useApiForm";
-import { useNavigate } from "react-router-dom";
+import useApiForm from "../../../hooks/useApiForm";
 import { CircularProgress } from "@mui/material";
 import { Box, Button } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import { TextInput, PasswordInput } from "../TextInputs/TextInputs";
-import { userLogin } from "../../api/user.services";
+import { TextInput, PasswordInput } from "../../TextInputs/TextInputs";
+import { userLogin } from "../../../api/user.services";
 import type { LoginFormInterface } from "./LoginForm.types";
+import { useUserContext } from "../../../contexts/userContext";
 
 function LoginForm() {
-  const navigate = useNavigate();
+  const { login } = useUserContext();
   const { submit, loading } = useApiForm<LoginFormInterface>(userLogin, {
     onSuccess: (resp) => {
-      localStorage.setItem("token", resp.data);
-      navigate("/products");
+      login(resp.data.access, "/products");
     },
   });
   const {

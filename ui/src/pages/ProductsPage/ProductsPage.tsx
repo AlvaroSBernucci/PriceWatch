@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import CustomContainer from "../../components/Container/Container";
+import CustomContainer from "../../components/Helper/Container/Container.tsx";
 import ProductCard from "../../components/ProductCard/ProductCard.tsx";
 import CustomModal from "../../components/CustomModal/CustomModal.tsx";
 import StatisticCard from "../../components/StatisticCard/StatisticCard";
-import NewProductForm from "../../components/NewProductForm/NewProductForm.tsx";
+import NewProductForm from "../../components/Forms/NewProductForm/NewProductForm.tsx";
 
 const mockProducts = [
   {
@@ -79,7 +79,7 @@ function ProductsPage() {
         handleClose={handleClose}
         title="Adicionar Produto"
         subtitle="Cole o link do produto que deseja monitorar. Opcionalmente, defina um preço alvo para receber alertas.">
-        <NewProductForm />
+        <NewProductForm onClose={() => setOpen(false)} />
       </CustomModal>
     </CustomContainer>
   );

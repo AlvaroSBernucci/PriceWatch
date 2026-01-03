@@ -1,6 +1,8 @@
 import { api } from "../utils/axios";
-import type { LoginFormInterface } from "../components/LoginForm/LoginForm.types";
-import type { RegisterFormInterface } from "../components/RegisterForm/RegisterForm.types";
+import useAxios from "../hooks/useAxios";
+import type { UserContextInterface } from "../contexts/userContext";
+import type { LoginFormInterface } from "../components/Forms/LoginForm/LoginForm.types";
+import type { RegisterFormInterface } from "../components/Forms/RegisterForm/RegisterForm.types";
 
 export const registerUser = async (data: RegisterFormInterface) => {
   if (data.password !== data.password_confirm) {
@@ -14,4 +16,8 @@ export const registerUser = async (data: RegisterFormInterface) => {
 };
 export const userLogin = async (data: LoginFormInterface) => {
   return api.post("/api/token/", data);
+};
+
+export const GetUserData = () => {
+  return useAxios<UserContextInterface>("/api/users/me/");
 };

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Typography } from "@mui/material";
-import AuthLayout from "../../components/AuthLayout/AuthLayout";
-import RegisterForm from "../../components/RegisterForm/RegisterForm";
+import AuthLayout from "../../components/Helper/AuthLayout/AuthLayout";
+import RegisterForm from "../../components/Forms/RegisterForm/RegisterForm";
 
 export default function RegisterPage() {
   return (

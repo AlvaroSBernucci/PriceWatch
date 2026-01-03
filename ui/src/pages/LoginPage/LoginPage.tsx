@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
-import LoginForm from "../../components/LoginForm/LoginForm";
-import AuthLayout from "../../components/AuthLayout/AuthLayout";
+import LoginForm from "../../components/Forms/LoginForm/LoginForm";
+import AuthLayout from "../../components/Helper/AuthLayout/AuthLayout";
 import { Link } from "react-router-dom";
 
 export default function LoginPage() {

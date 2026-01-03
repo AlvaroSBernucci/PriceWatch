@@ -1,9 +1,9 @@
 import { Box, Button } from "@mui/material";
-import useApiForm from "../../hooks/useApiForm";
+import useApiForm from "../../../hooks/useApiForm";
 import { CircularProgress } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import { registerUser } from "../../api/user.services";
-import { TextInput, EmailInput, PasswordInput } from "../TextInputs/TextInputs";
+import { registerUser } from "../../../api/user.services";
+import { TextInput, EmailInput, PasswordInput } from "../../TextInputs/TextInputs";
 import type { RegisterFormInterface } from "./RegisterForm.types";
 
 function RegisterForm() {

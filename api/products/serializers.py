@@ -4,10 +4,24 @@ from products.models import Products, ProductsHistory, ProductsSource
 
 class ProductSerializer(serializers.ModelSerializer):
     link = serializers.URLField(max_length=2000)
+    initial_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    current_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    last_but_one_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    price_change = serializers.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         model = Products
-        fields = "__all__"
+        fields = [
+            "name",
+            "link",
+            "user",
+            "product_source",
+            "target_price",
+            "initial_price",
+            "current_price",
+            "last_but_one_price",
+            "price_change",
+        ]
 
 
 class ProductsHistorySerializer(serializers.ModelSerializer):
