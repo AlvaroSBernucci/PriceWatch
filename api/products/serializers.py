@@ -6,12 +6,15 @@ class ProductSerializer(serializers.ModelSerializer):
     link = serializers.URLField(max_length=2000)
     initial_price = serializers.DecimalField(max_digits=10, decimal_places=2)
     current_price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    lowest_price = serializers.DecimalField(max_digits=10, decimal_places=2)
     last_but_one_price = serializers.DecimalField(max_digits=10, decimal_places=2)
     price_change = serializers.DecimalField(max_digits=10, decimal_places=2)
+    has_changed = serializers.BooleanField()
 
     class Meta:
         model = Products
         fields = [
+            "id",
             "name",
             "link",
             "user",
@@ -19,8 +22,10 @@ class ProductSerializer(serializers.ModelSerializer):
             "target_price",
             "initial_price",
             "current_price",
+            "lowest_price",
             "last_but_one_price",
             "price_change",
+            "has_changed",
         ]
 
 

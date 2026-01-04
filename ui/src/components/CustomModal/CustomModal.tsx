@@ -18,7 +18,7 @@ function CustomModal({ title, subtitle, open, handleClose, children }: ModalInte
         <Typography id="modal-modal-title" variant="h6" component="h2">
           {title}
         </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+        <Typography id="modal-modal-description" sx={{ my: 2 }}>
           {subtitle}
         </Typography>
         {children}

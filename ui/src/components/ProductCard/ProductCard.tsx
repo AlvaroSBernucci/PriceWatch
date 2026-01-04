@@ -1,8 +1,19 @@
+import { toCurrency, toPercent } from "../../utils/formater";
 import { Box, Typography, Button, Card, CardContent, IconButton, Stack, Chip, CardActions } from "@mui/material";
 import { TrendingDown, TrendingUp, Delete, ShowChart } from "@mui/icons-material";
-import type { ProductCardInterface } from "./ProductCard.types";
+import type { ProductCardType } from "./ProductCard.types";
 
-function ProductCard({ name, currentPrice, initialPrice, lowestPrice, priceChange }: ProductCardInterface) {
+function ProductCard({
+  id,
+  name,
+  current_price,
+  initial_price,
+  lowest_price,
+  last_but_one_price,
+  price_change,
+  has_changed,
+  openDelete,
+}: ProductCardType) {
   return (
     <Card sx={{ width: "100%" }}>
       <CardContent>
@@ -10,12 +21,12 @@ function ProductCard({ name, currentPrice, initialPrice, lowestPrice, priceChang
           <Typography variant="h6" fontWeight={600} gutterBottom noWrap>
             {name}
           </Typography>
-          {priceChange !== undefined && (
+          {price_change !== undefined && (
             <Chip
-              icon={priceChange < 0 ? <TrendingDown /> : <TrendingUp />}
-              label={`${priceChange > 0 ? "+" : ""}${priceChange.toFixed(2)}%`}
+              icon={has_changed ? <TrendingUp /> : <TrendingDown />}
+              label={`${has_changed ? "+" : ""}${toPercent(price_change)}`}
               size="small"
-              color={priceChange < 0 ? "success" : "error"}
+              color={has_changed ? "error" : "success"}
             />
           )}
         </Box>
@@ -26,15 +37,18 @@ function ProductCard({ name, currentPrice, initialPrice, lowestPrice, priceChang
                 Preço Atual
               </Typography>
               <Typography variant="h4" fontWeight={700} color="primary.main">
-                R$ {currentPrice.toFixed(2)}
+                {toCurrency(current_price)}
               </Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary" display="block">
-                Menor preço: R$ {lowestPrice.toFixed(2)}
+                {toCurrency(last_but_one_price)}
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
-                Preço inicial: R$ {initialPrice.toFixed(2)}
+                {toCurrency(lowest_price)}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block">
+                {toCurrency(initial_price)}
               </Typography>
             </Box>
           </Box>
@@ -44,7 +58,7 @@ function ProductCard({ name, currentPrice, initialPrice, lowestPrice, priceChang
         <Button size="small" startIcon={<ShowChart />} fullWidth variant="outlined">
           Ver Histórico
         </Button>
-        <IconButton size="small" color="error">
+        <IconButton size="small" color="error" onClick={() => openDelete(id)}>
           <Delete />
         </IconButton>
       </CardActions>
