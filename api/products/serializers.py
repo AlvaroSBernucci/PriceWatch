@@ -4,6 +4,9 @@ from products.models import Products, ProductsHistory, ProductsSource
 
 class ProductSerializer(serializers.ModelSerializer):
     link = serializers.URLField(max_length=2000)
+    latest_verification = serializers.DateTimeField(
+        format="%d/%m/%Y %H:%M", read_only=True
+    )
     initial_price = serializers.DecimalField(
         max_digits=10, decimal_places=2, read_only=True
     )
@@ -11,6 +14,9 @@ class ProductSerializer(serializers.ModelSerializer):
         max_digits=10, decimal_places=2, read_only=True
     )
     lowest_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    highest_price = serializers.DecimalField(
         max_digits=10, decimal_places=2, read_only=True
     )
     last_but_one_price = serializers.DecimalField(
@@ -29,10 +35,12 @@ class ProductSerializer(serializers.ModelSerializer):
             "link",
             "user",
             "product_source",
+            "latest_verification",
             "target_price",
             "initial_price",
             "current_price",
             "lowest_price",
+            "highest_price",
             "last_but_one_price",
             "price_change",
             "has_changed",
@@ -45,7 +53,8 @@ class ProductsHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductsHistory
-        fields = "__all__"
+        fields = ["product", "price", "created_at"]
+        ordering = ["-created_at"]
 
 
 class ProductsSourceOptionSerializer(serializers.ModelSerializer):

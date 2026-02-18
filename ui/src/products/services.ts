@@ -8,8 +8,13 @@ export const productServices = {
     return resp.data;
   },
 
-  getProductById: async (id: number) => {
-    const response = await api.get(`/products/${id}/`);
+  getProductById: async (id: number | string) => {
+    const response = await api.get<productTypes.ProductsInterface>(`/products/${id}`);
+    return response.data;
+  },
+
+  getProductHistory: async (id: string) => {
+    const response = await api.get<productTypes.IProductHistory[]>(`/products/${id}/history`);
     return response.data;
   },
 
