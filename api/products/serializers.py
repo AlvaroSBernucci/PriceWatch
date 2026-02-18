@@ -4,12 +4,22 @@ from products.models import Products, ProductsHistory, ProductsSource
 
 class ProductSerializer(serializers.ModelSerializer):
     link = serializers.URLField(max_length=2000)
-    initial_price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    current_price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    lowest_price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    last_but_one_price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    price_change = serializers.DecimalField(max_digits=10, decimal_places=2)
-    has_changed = serializers.BooleanField()
+    initial_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    current_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    lowest_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    last_but_one_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    price_change = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
+    has_changed = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Products
@@ -27,6 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "price_change",
             "has_changed",
         ]
+        read_only_fields = ("user",)
 
 
 class ProductsHistorySerializer(serializers.ModelSerializer):

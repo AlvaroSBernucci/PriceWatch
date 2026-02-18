@@ -89,7 +89,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         return products
 
     def perform_create(self, serializer):
-        product = serializer.save()
+        product = serializer.save(user=self.request.user)
         update_product_price_task.delay(product.id)
 
 

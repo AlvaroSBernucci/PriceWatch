@@ -1,44 +1,44 @@
 import "./App.css";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import NavHeader from "./components/NavHeader/NavHeader";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import ProductsPage from "./pages/ProductsPage/ProductsPage";
-import SnackLayer from "./components/Helper/SnackLayer/SnackLayer";
-import { UserStorage } from "./contexts/userContext";
-import { SnackProvider } from "./contexts/snackContext";
+import { ROUTES } from "./constants/routes";
+import LoginPage from "./auth/pages/LoginPage/LoginPage";
+import NavHeader from "./common/components/sections/NavHeader";
+import ProductsPage from "./products/pages/ProductsPage";
+import { AuthProvider } from "./auth/providers/AuthProvider";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./components/Helper/ProtectedRoute/ProtectedRoute";
+import RegisterPage from "./auth/pages/RegisterPage/RegisterPage";
+import ProtectedRoute from "./auth/components/routes/ProtectedRoute";
+import ResetPasswordPage from "./auth/pages/ResetPasswordPage/ResetPasswordPage";
+import ForgotPasswordPage from "./auth/pages/ForgotPasswordPage/ForgotPasswordPage";
 
 function App() {
   return (
-    <SnackProvider>
-      <BrowserRouter>
-        <UserStorage>
-          <NavHeader />
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <ProductsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/products"
-              element={
-                <ProtectedRoute>
-                  <ProductsPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </UserStorage>
-      </BrowserRouter>
-      <SnackLayer />
-    </SnackProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <NavHeader />
+        <Routes>
+          <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+          <Route path={ROUTES.AUTH.RESET_PASSWORD_PAGE} element={<ResetPasswordPage />} />
+          <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <ProductsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path={ROUTES.PRODUCTS.LIST}
+            element={
+              <ProtectedRoute>
+                <ProductsPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
