@@ -51,7 +51,7 @@ function ProductsPage() {
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {products?.length ? (
           products.map((product) => (
-            <Grid sx={{ xs: 12, md: 4 }} key={product.id}>
+            <Grid size={{ xs: 12, md: 4 }} key={product.id}>
               <ProductCard
                 id={product.id}
                 name={product.name}
