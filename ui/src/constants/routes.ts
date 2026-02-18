@@ -4,10 +4,10 @@ export const ROUTES = {
     LOGIN: "/login",
     REGISTER: "/register",
     FORGOT_PASSWORD: "/forgot-password",
-    RESET_PASSWORD_PAGE: "/reset-password/:uid/:token"
+    RESET_PASSWORD_PAGE: "/reset-password/:uid/:token",
   },
   PRODUCTS: {
-    LIST: "/products"
-  }
-
+    LIST: "/products",
+    DETAIL: (id) => `/product/${id}`,
+  },
 } as const;

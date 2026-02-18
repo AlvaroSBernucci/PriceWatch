@@ -1,5 +1,5 @@
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import viewsets, permissions, response
+from rest_framework.decorators import action
 from django.db.models import (
     F,
     Subquery,
@@ -10,18 +10,25 @@ from django.db.models import (
     Value,
     Case,
     When,
+    Max,
+    Min,
 )
 from django.db.models.functions import Cast
 from products.models import Products, ProductsHistory, ProductsSource
 from products.serializers import (
     ProductSerializer,
     ProductsSourceOptionSerializer,
+    ProductsHistorySerializer,
 )
 from .tasks import update_product_price_task
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Products.objects.all()
+    queryset = (
+        Products.objects.all()
+        .select_related("user", "product_source")
+        .prefetch_related("products_history")
+    )
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -29,35 +36,26 @@ class ProductViewSet(viewsets.ModelViewSet):
         user = self.request.user
         base_queryset = Products.objects.filter(user=user)
 
-        initial_price_subquery = (
-            ProductsHistory.objects.filter(product=OuterRef("pk"))
-            .order_by("created_at")
-            .values("price")[:1]
-        )
+        history_base = ProductsHistory.objects.filter(product=OuterRef("pk"))
 
-        current_price_subquery = (
-            ProductsHistory.objects.filter(product=OuterRef("pk"))
-            .order_by("-created_at")
-            .values("price")[:1]
-        )
-        lowest_price_subquery = (
-            ProductsHistory.objects.filter(product=OuterRef("pk"))
-            .order_by("price")
-            .values("price")[:1]
-        )
+        initial_price_subquery = history_base.order_by("created_at").values("price")[:1]
 
-        last_but_one_price_subquery = (
-            ProductsHistory.objects.filter(product=OuterRef("pk"))
-            .order_by("-created_at")
-            .values("price")[1:2]
-        )
+        current_price_subquery = history_base.order_by("-created_at").values("price")[
+            :1
+        ]
+
+        last_but_one_price_subquery = history_base.order_by("-created_at").values(
+            "price"
+        )[1:2]
 
         products = (
             base_queryset.annotate(
+                latest_verification=Max("products_history__created_at"),
+                lowest_price=Min("products_history__price"),
+                highest_price=Max("products_history__price"),
                 initial_price=Subquery(initial_price_subquery),
-                current_price=Subquery(current_price_subquery),
-                lowest_price=Subquery(lowest_price_subquery),
                 last_but_one_price=Subquery(last_but_one_price_subquery),
+                current_price=Subquery(current_price_subquery),
             )
             .annotate(
                 price_change=ExpressionWrapper(
@@ -91,6 +89,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         product = serializer.save(user=self.request.user)
         update_product_price_task.delay(product.id)
+
+    @action(methods=["GET"], detail=True)
+    def history(self, request, pk=None):
+        product = self.get_object()
+
+        serializer = ProductsHistorySerializer(
+            product.products_history.all(), many=True
+        )
+        return response.Response(serializer.data)
 
 
 class ProductsSourceViewSet(viewsets.ModelViewSet):

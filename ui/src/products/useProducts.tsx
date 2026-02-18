@@ -11,10 +11,18 @@ export const useProducts = (params = {}) => {
   });
 };
 
-export const useProduct = (id: number) => {
+export const useProduct = (id: number | string) => {
   return useQuery({
     queryKey: ["products", id],
     queryFn: () => productServices.getProductById(id),
+    enabled: !!id,
+  });
+};
+
+export const useProductHistory = (id: string) => {
+  return useQuery({
+    queryKey: ["product-history", id],
+    queryFn: () => productServices.getProductHistory(id),
     enabled: !!id,
   });
 };

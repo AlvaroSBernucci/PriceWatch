@@ -38,11 +38,7 @@ function ProductsPage() {
     >
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid sx={{ xs: 12, md: 4 }}>
-          <StatisticCard
-            title="Total de produtos"
-            text="Produtos monitorados"
-            numberValue={products?.length}
-          />
+          <StatisticCard title="Total de produtos" numberValue={products?.length} />
         </Grid>
       </Grid>
       <Typography variant="h5" fontWeight={600} sx={{ mb: 3 }}>
@@ -56,7 +52,7 @@ function ProductsPage() {
                 id={product.id}
                 name={product.name}
                 current_price={product.current_price}
-                initial_price={product.initial_price}
+                target_price={product.target_price}
                 lowest_price={product.lowest_price}
                 last_but_one_price={product.last_but_one_price}
                 price_change={product.price_change}

@@ -9,7 +9,7 @@ class ProductsSourceAdmin(admin.ModelAdmin):
 
 @admin.register(Products)
 class ProductsAdmin(admin.ModelAdmin):
-    fields = ["name", "price", "user", "link", "created_at"]
+    fields = ["name", "price", "user", "link", "target_price", "created_at"]
     readonly_fields = ["created_at"]
     list_display = ["name", "user", "price"]
 
@@ -18,4 +18,5 @@ class ProductsAdmin(admin.ModelAdmin):
 class ProductsHistoryAdmin(admin.ModelAdmin):
     fields = ["price", "product", "created_at"]
     readonly_fields = ["created_at"]
-    list_display = ["product__name", "price", "created_at"]
+    list_display = ["product__name", "price", "created_at", "product__id"]
+    search_fields = ["product__id"]

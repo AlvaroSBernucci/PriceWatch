@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import {
   AppBar,
@@ -13,6 +13,7 @@ import {
   Menu,
   MenuItem,
   Tooltip,
+  Stack,
 } from "@mui/material";
 import { TrendingDown } from "@mui/icons-material";
 import { useLogout } from "@/auth/useAuth";
@@ -22,14 +23,17 @@ export default function NavHeader() {
   const { mutate: logout } = useLogout();
   const settings = [
     { label: "Meus produtos", to: ROUTES.PRODUCTS.LIST },
-    { label: "Dashboard", to: "/dashboard" },
     { label: "Minha conta", to: "/account" },
     { label: "Sair", to: ROUTES.AUTH.LOGIN, action: logout },
   ];
+  const { pathname } = useLocation();
 
   const { user } = useAuth();
 
   const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <AppBar position="sticky" color="transparent" elevation={0}>
@@ -79,9 +83,24 @@ export default function NavHeader() {
               </Menu>
             </>
           ) : (
-            <Button variant="contained" color="primary" component={Link} to="/login">
-              Entrar
-            </Button>
+            <Stack direction="row" spacing={3} sx={{ display: { xs: "none", md: "flex" } }}>
+              {pathname === ROUTES.HOME && (
+                <>
+                  <Button onClick={() => scrollTo("features")} color="inherit">
+                    Recursos
+                  </Button>
+                  <Button onClick={() => scrollTo("how-it-works")} color="inherit">
+                    Como Funciona
+                  </Button>
+                </>
+              )}
+              <Button component={Link} to={ROUTES.AUTH.LOGIN} color="inherit">
+                Login
+              </Button>
+              <Button variant="contained" component={Link} to={ROUTES.AUTH.REGISTER}>
+                Começar Grátis
+              </Button>
+            </Stack>
           )}
         </Toolbar>
       </Container>
