@@ -1,8 +1,10 @@
+# api/services/scraper.py
 from decimal import Decimal
 from bs4 import BeautifulSoup
 from abc import ABC, abstractmethod
 from playwright.sync_api import sync_playwright
 from contextlib import contextmanager
+from services.scraper_protocol import ScraperProtocol
 
 
 class BaseScraper(ABC):
@@ -37,41 +39,35 @@ class BaseScraper(ABC):
         page = self.context.new_page()
         try:
             page.goto(url, wait_until="domcontentloaded", timeout=60000)
-
             page.mouse.move(400, 300)
             page.mouse.wheel(0, 600)
             page.wait_for_timeout(1200)
-
             page.wait_for_selector("h1", timeout=20000)
-
             html = page.content()
-            page.close()
             return html
-
         finally:
             page.close()
 
     @abstractmethod
-    def _extract_price(self, html: str):
+    def _extract_price(self, html: str) -> Decimal:
         pass
 
-    def get_price(self, url: str):
-        html = self._load_page(url)
-        return self._extract_price(html)
+    def get_price(self, url: str) -> Decimal:
+        with self.session():
+            html = self._load_page(url)
+            return self._extract_price(html)
 
 
-class MercadoLivreScraper(BaseScraper):
-    def _extract_price(self, html: str):
+class MercadoLivreScraper(BaseScraper, ScraperProtocol):
+    def _extract_price(self, html: str) -> Decimal:
         soup = BeautifulSoup(html, "html.parser")
         price_meta = soup.find("meta", itemprop="price")
-
         return Decimal(price_meta["content"]) if price_meta else None
 
 
-class AmazonScraper(BaseScraper):
-    def _extract_price(self, html):
+class AmazonScraper(BaseScraper, ScraperProtocol):
+    def _extract_price(self, html: str) -> Decimal:
         soup = BeautifulSoup(html, "html.parser")
-
         price_div = soup.find(
             "div",
             attrs={
